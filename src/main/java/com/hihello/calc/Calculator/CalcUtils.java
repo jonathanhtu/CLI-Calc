@@ -24,7 +24,7 @@ public class CalcUtils {
         // TODO: Make these messages constants
         // TODO: Replace symbols with their variables
         System.out.println("Supported operations are addition (+), subtraction (-), multiplication (*), and division (/).");
-        System.out.println("To add a negative sign, enter \"!\".");
+        System.out.println("To add a negative sign, enter \"!\". (FEATURE COMING SOON)");
         System.out.println("To clear results, enter \"c\".");
         System.out.println("To close Simple Calc, enter \"exit\".");
         System.out.println("To repeat these instructions, enter \"help\".");
