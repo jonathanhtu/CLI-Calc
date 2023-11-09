@@ -7,6 +7,7 @@ public class Calculator {
 
     Scanner ins;
     private Double total = 0.0;
+    private String[] currentCache = new String[0];
 
     public Calculator() {
         ins = new Scanner(System.in);
@@ -25,18 +26,37 @@ public class Calculator {
         // TODO BUG: Sometimes, these do not trigger and the illegal argument exception for letters gets triggered instead.
         if (CalcUtils.ACTION_CLEAR.equals(input)) {
             total = 0.0;
+            currentCache = new String[0];
             System.out.println(total);
-            start();
         } else if (CalcUtils.ACTION_EXIT.equals(input)) {
             return;
         } else if (CalcUtils.ACTION_HELP.equals(input)) {
             CalcUtils.printInstructionLines();
-            start();
+        } else if (CalcUtils.OPERATOR_EQUALS.equals(input.substring(input.length() - 1))) {
+            if (input.length() == 1) {
+                calculateResult(currentCache);
+                start();
+            } else {
+                CalcUtils.validateNoLetters(input);
+                String[] inputArray = input.substring(0, input.length() - 1)
+                        .split("((?<=[^0-9'])|(?=[^0-9']))");
+                currentCache = CalcUtils.concatenateArrays(currentCache, inputArray);
+                calculateResult(currentCache);
+            }
+        } else {
+            // TODO: This should print the last element of the array to match doc specifications.
+            // TODO BUG: This may not work if the first element is not an operator.
+            CalcUtils.validateNoLetters(input);
+            String[] inputArray = input.split("((?<=[^0-9'])|(?=[^0-9']))");
+            currentCache = CalcUtils.concatenateArrays(currentCache, inputArray);
         }
 
-        // TODO: Handle special characters
-        CalcUtils.validateNoLetters(input);
-        String[] inputArray = input.split("((?<=[^0-9'])|(?=[^0-9']))");
+
+        // Keep running the calculator if the user has not exited.
+        start();
+    }
+
+    private void calculateResult(String[] inputArray) {
 
         // First input must be an operator, ignore first input if it is not an operator.
         // TODO: Account for first input being a negative number.
@@ -56,8 +76,5 @@ public class Calculator {
         total = CalcUtils.performAdditionAndSubtraction(inputArray, total);
 
         System.out.println(total);
-
-        // Keep running the calculator if the user has not exited.
-        start();
     }
 }

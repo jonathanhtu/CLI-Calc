@@ -10,6 +10,7 @@ public class CalcUtils {
     protected static String OPERATOR_MINUS = "-";
     protected static String OPERATOR_MULTIPLY = "*";
     protected static String OPERATOR_DIVIDE = "/";
+    protected static String OPERATOR_EQUALS = "=";
     protected static String OPERATOR_NEGATE = "!";
     protected static String ACTION_CLEAR = "c";
     protected static String ACTION_EXIT = "exit";
@@ -117,6 +118,17 @@ public class CalcUtils {
     protected static boolean isOperator(String val) {
         return (OPERATOR_PLUS.equals(val) || OPERATOR_MINUS.equals(val)
                 || OPERATOR_MULTIPLY.equals(val) || OPERATOR_DIVIDE.equals(val));
+    }
+
+    protected static String[] concatenateArrays(String[] a, String[] b) {
+        int aLen = a.length;
+        int bLen = b.length;
+
+        String[] concatenatedArray = new String[aLen + bLen];
+        System.arraycopy(a, 0, concatenatedArray, 0, aLen);
+        System.arraycopy(b, 0, concatenatedArray, aLen, bLen);
+
+        return concatenatedArray;
     }
 
     private static Double performOperation(String operator, Double val1, Double val2) {
