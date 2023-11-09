@@ -43,12 +43,14 @@ public class CalcUtils {
 
     /*
      * Scan through the inputs and complete all multiplication and division operations.
+     * Expects the first element to always be an operator
      */
     protected static String[] performMultiplicationAndDivision(String[] inputArray, Double total) {
         List<String> postOperationArray = new ArrayList<>();
 
         Double previous = total;
         String operator = "";
+        boolean negate = false;
         for (int i = 0; i < inputArray.length; i++) {
             if (isOperator(inputArray[i])) {
                 if (OPERATOR_PLUS.equals(inputArray[i]) || OPERATOR_MINUS.equals(inputArray[i])) {
@@ -62,6 +64,7 @@ public class CalcUtils {
                         }
                         postOperationArray.add(inputArray[i]);
                         previous = null;
+                        negate = false;
                         operator = "";
                     }
                 } else {
@@ -70,15 +73,23 @@ public class CalcUtils {
                     if (!operator.isEmpty()) {
                         throw new IllegalArgumentException("Cannot have multiple operators in a row.");
                     } else {
+                        negate = false;
                         operator = inputArray[i];
                     }
                 }
+            } else if (OPERATOR_NEGATE.equals(inputArray[i])) {
+                negate = true;
             } else {
                 Double value = Double.valueOf(inputArray[i]);
+                if (negate) {
+                    value *= -1;
+                    negate = false;
+                }
                 if (operator.isEmpty()) {
                     previous = value;
                 } else {
                     previous = performOperation(operator, previous, value);
+                    operator = "";
                 }
             }
         }
@@ -88,9 +99,11 @@ public class CalcUtils {
 
     /*
      * Scan through the inputs and complete all addition and subtraction operations.
+     * Expects the first element to always be an operator.
      */
     protected static Double performAdditionAndSubtraction(String[] inputArray, Double total) {
         String operator = "";
+        boolean negate = false;
         // TODO: Account for negative numbers.
         for (int i = 0; i < inputArray.length; i++) {
             // Assumes that all operators we see here are addition or subtraction, since multiplication and division
@@ -101,10 +114,18 @@ public class CalcUtils {
                 if (!operator.isEmpty()) {
                     throw new IllegalArgumentException("Cannot have multiple operators in a row.");
                 } else {
+                    // TODO: Operator following negation does not make sense and should throw an error.
+                    negate = false;
                     operator = inputArray[i];
                 }
+            } else if (OPERATOR_NEGATE.equals(inputArray[i])) {
+                negate = true;
             } else {
                 Double value = Double.valueOf(inputArray[i]);
+                if (negate) {
+                    value *= -1;
+                    negate = false;
+                }
                 if (operator.isEmpty()) {
                     throw new IllegalArgumentException("No operator found.");
                 }
@@ -118,6 +139,15 @@ public class CalcUtils {
     protected static boolean isOperator(String val) {
         return (OPERATOR_PLUS.equals(val) || OPERATOR_MINUS.equals(val)
                 || OPERATOR_MULTIPLY.equals(val) || OPERATOR_DIVIDE.equals(val));
+    }
+
+    protected static String[] skipToFirstOperator(String[] values) {
+        for (int i = 0; i < values.length; i++) {
+            if (isOperator(values[i])) {
+                return Arrays.copyOfRange(values, i, values.length);
+            }
+        }
+        return new String[0];
     }
 
     protected static String[] concatenateArrays(String[] a, String[] b) {
